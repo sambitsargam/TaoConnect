@@ -34,18 +34,18 @@ const DEFAULT_CONFIG: LeaseConfigType = {
 function App() {
   // Theme state
   const [darkMode, setDarkMode] = useLocalStorage('tpn-darkMode', window.matchMedia('(prefers-color-scheme: dark)').matches);
-  
+
   // User preferences
   const [config, setConfig] = useLocalStorage<LeaseConfigType>('tpn-config', DEFAULT_CONFIG);
-  
+
   // UI states
   const [countries, setCountries] = useState<Country[]>([]);
   const [isLoadingCountries, setIsLoadingCountries] = useState(false);
   const [isGeneratingConfig, setIsGeneratingConfig] = useState(false);
-  
+
   // Generated config
   const [wireGuardConfig, setWireGuardConfig] = useState<WireGuardConfig | null>(null);
-  
+
   // Notification timer
   const notificationTimerRef = useRef<number>(-1);
   const { scheduleNotification, cancelNotification } = useNotifications();
@@ -64,7 +64,7 @@ function App() {
     const loadCountries = async () => {
       setIsLoadingCountries(true);
       setCountries([]);
-      
+
       try {
         const fetchedCountries = await fetchCountries(config.validator);
         setCountries(fetchedCountries);
@@ -72,7 +72,7 @@ function App() {
         setIsLoadingCountries(false);
       }
     };
-    
+
     loadCountries();
   }, [config.validator]);
 
@@ -82,13 +82,13 @@ function App() {
       cancelNotification(notificationTimerRef.current);
       notificationTimerRef.current = -1;
     }
-    
+
     if (wireGuardConfig && config.alertBeforeExpiry > 0) {
       const expiryTime = wireGuardConfig.expiresAt * 1000;
       const currentTime = Date.now();
       const timeUntilExpiry = expiryTime - currentTime;
       const notificationTime = timeUntilExpiry - (config.alertBeforeExpiry * 1000);
-      
+
       if (notificationTime > 0) {
         notificationTimerRef.current = scheduleNotification(
           'TPN Lease Expiring',
@@ -97,7 +97,7 @@ function App() {
         );
       }
     }
-    
+
     return () => {
       if (notificationTimerRef.current > 0) {
         cancelNotification(notificationTimerRef.current);
@@ -131,7 +131,7 @@ function App() {
 
   const handleGenerateConfig = async () => {
     setIsGeneratingConfig(true);
-    
+
     try {
       const result = await generateConfig(
         config.validator,
@@ -139,7 +139,7 @@ function App() {
         config.leaseMinutes,
         config.format
       );
-      
+
       if (result) {
         setWireGuardConfig(result);
       }
@@ -162,7 +162,7 @@ function App() {
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
               <WifiOff className="h-8 w-8 text-primary-600 dark:text-primary-400" />
-              <h1 className="ml-2 text-xl font-bold text-gray-900 dark:text-white">TPN Frontend</h1>
+              <h1 className="ml-2 text-xl font-bold text-gray-900 dark:text-white">Tao Connect</h1>
             </div>
             <ThemeToggle darkMode={darkMode} onToggle={toggleDarkMode} />
           </div>
@@ -172,16 +172,17 @@ function App() {
       <LandingPage />
 
       <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="glass-card p-6"
+          className="glass-card p-6 bg-white dark:bg-gray-900 shadow-md rounded-lg"
         >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Lease Configuration */}
             <div>
-              <h2 className="text-xl font-semibold mb-4">Lease Configuration</h2>
-              
+              <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Lease Configuration</h2>
+
               <div className="space-y-6">
                 <ValidatorSelector
                   validators={VALIDATORS}
@@ -189,14 +190,14 @@ function App() {
                   onValidatorChange={handleValidatorChange}
                   isLoading={isLoadingCountries}
                 />
-                
+
                 <CountrySelector
                   countries={countries}
                   selectedCountry={config.country}
                   onCountryChange={handleCountryChange}
                   isLoading={isLoadingCountries}
                 />
-                
+
                 <LeaseConfig
                   leaseMinutes={config.leaseMinutes}
                   onLeaseMinutesChange={handleLeaseMinutesChange}
@@ -207,21 +208,22 @@ function App() {
                   onGenerateConfig={handleGenerateConfig}
                   isGenerating={isGeneratingConfig}
                 />
-                
+
                 <NotificationControl hasConfig={!!wireGuardConfig} />
               </div>
             </div>
-            
+
+            {/* WireGuard Configuration */}
             <div>
-              <h2 className="text-xl font-semibold mb-4">WireGuard Configuration</h2>
-              
+              <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">WireGuard Configuration</h2>
+
               {wireGuardConfig ? (
                 <ConfigDisplay
                   config={wireGuardConfig.config}
                   expiresAt={wireGuardConfig.expiresAt}
                 />
               ) : (
-                <div className="glass-card p-6 flex flex-col items-center justify-center text-center h-60">
+                <div className="glass-card p-6 flex flex-col items-center justify-center text-center h-60 bg-gray-100 dark:bg-gray-800 rounded-lg shadow">
                   <Info className="h-12 w-12 text-gray-400 mb-4" />
                   <h3 className="text-lg font-medium text-gray-700 dark:text-gray-300">No Configuration</h3>
                   <p className="text-sm text-gray-500 dark:text-gray-400 max-w-sm mt-2">
@@ -233,6 +235,7 @@ function App() {
           </div>
         </motion.div>
       </main>
+
     </div>
   );
 }
