@@ -156,7 +156,7 @@ export const generateConfig = async (
 ): Promise<WireGuardConfig | null> => {
   try {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 10000);
+    const timeoutId = setTimeout(() => controller.abort(), 100000);
 
     const proxyUrl = `http://localhost:5001/proxy/api/config/new?target=${validator}&format=${format}&geo=${country}&lease_minutes=${leaseMinutes}`;
     const response = await fetch(proxyUrl, { signal: controller.signal });

@@ -29,7 +29,7 @@ const ConfigDisplay: React.FC<ConfigDisplayProps> = ({ config, expiresAt }) => {
   if (!config) return null;
 
   const formattedExpiryTime = expiresAt 
-    ? format(new Date(expiresAt * 1000), 'MMMM d, yyyy h:mm:ss a')
+    ? format(new Date(expiresAt), 'MMMM d, yyyy h:mm:ss a')
     : 'Unknown';
 
   return (

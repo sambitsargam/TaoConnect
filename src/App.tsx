@@ -84,10 +84,18 @@ function App() {
     }
 
     if (wireGuardConfig && config.alertBeforeExpiry > 0) {
-      const expiryTime = wireGuardConfig.expiresAt * 1000;
+      const expiryTime = wireGuardConfig.expiresAt;
       const currentTime = Date.now();
       const timeUntilExpiry = expiryTime - currentTime;
-      const notificationTime = timeUntilExpiry - (config.alertBeforeExpiry * 1000);
+      const notificationTime = timeUntilExpiry - (config.alertBeforeExpiry );
+
+      // console all
+      console.log('Current Time:', new Date(currentTime).toLocaleString());
+      console.log('Expiry Time:', new Date(expiryTime).toLocaleString());
+      console.log('Time Until Expiry:', timeUntilExpiry / 1000, 'seconds');
+      console.log('Notification Time:', notificationTime / 1000, 'seconds');
+      console.log('Alert Before Expiry:', config.alertBeforeExpiry, 'seconds');
+      console.log('Notification Time:', notificationTime / 1000, 'seconds');
 
       if (notificationTime > 0) {
         notificationTimerRef.current = scheduleNotification(
