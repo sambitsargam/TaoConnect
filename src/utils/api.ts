@@ -155,14 +155,11 @@ export const generateConfig = async (
   format: 'text' | 'json'
 ): Promise<WireGuardConfig | null> => {
   try {
-    // Add timeout to the fetch request
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+    const timeoutId = setTimeout(() => controller.abort(), 10000);
 
     const proxyUrl = `http://localhost:5001/proxy/api/config/new?target=${validator}&format=${format}&geo=${country}&lease_minutes=${leaseMinutes}`;
     const response = await fetch(proxyUrl, { signal: controller.signal });
-
-
 
     clearTimeout(timeoutId);
 
@@ -170,16 +167,17 @@ export const generateConfig = async (
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
 
-    const data: APIResponse<WireGuardConfig> = await response.json();
+    const raw = await response.json();
 
-    if (!data.success || !data.data) {
-      throw new Error(data.error || 'Failed to generate config');
-    }
+    // Adapt raw response to expected format
+    const adapted: WireGuardConfig = {
+      config: raw.peer_config,
+      expiresAt: raw.expires_at,
+    };
 
     toast.success('Config generated successfully!');
-    return data.data;
+    return adapted;
   } catch (error) {
-    // Handle AbortError specifically
     if (error instanceof DOMException && error.name === 'AbortError') {
       handleApiError(new Error('Request timeout: Validator did not respond in time'));
     } else {
@@ -189,6 +187,7 @@ export const generateConfig = async (
     return null;
   }
 };
+
 
 export const downloadConfig = (config: string): void => {
   const blob = new Blob([config], { type: 'text/plain' });

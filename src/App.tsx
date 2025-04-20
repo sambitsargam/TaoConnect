@@ -27,7 +27,7 @@ const DEFAULT_CONFIG: LeaseConfigType = {
   validator: VALIDATORS[0].value,
   country: 'any',
   leaseMinutes: 60,
-  format: 'text',
+  format: 'json',
   alertBeforeExpiry: 60,
 };
 
