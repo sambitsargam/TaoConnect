@@ -27,8 +27,10 @@ export const fetchCountries = async (validator: string): Promise<Country[]> => {
     const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
     
     const response = await fetch(`http://${validator}/api/config/countries`, {
-      signal: controller.signal
+      signal: controller.signal,
+      mode: 'no-cors'
     });
+    
     
     clearTimeout(timeoutId);
     
