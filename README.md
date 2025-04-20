@@ -62,8 +62,8 @@ By connecting through this app, you’re tapping directly into a **decentralized
 
 1. **Clone the repo**
    ```bash
-   git clone https://github.com/your-org/taoconnect.git
-   cd taoconnect
+   git clone https://github.com/sambitsargam/TaoConnect.git
+   cd TaoConnect
    ```
 
 2. **Install dependencies**
